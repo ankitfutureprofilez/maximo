@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
+import './App.css'; // Import the CSS file
 
 const BarcodeScanner = () => {
   const [scannedData, setScannedData] = useState(null);
@@ -31,7 +32,7 @@ const BarcodeScanner = () => {
               setScannedData(result.text);
               console.log('Scanned Barcode Data:', result.text);
               setScanning(false); // Stop scanning after a successful scan
-            } else if (error) {
+            } else if (error && !error.message.includes('No MultiFormatReader available')) {
               console.error('Barcode scanning error:', error);
               setCameraError('Error scanning barcode. Please try again.');
             }
