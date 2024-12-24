@@ -1,71 +1,32 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { BrowserMultiFormatReader } from '@zxing/library';
+import React, { useState, useRef } from 'react';
+import BarcodeReader from 'react-barcode-reader'; // Import BarcodeReader component
 
-function BarcodeScanner() {
-  const [scanResult, setScanResult] = useState('');
-  const [videoDevice, setVideoDevice] = useState(null);
+const BarcodeScanner = () => {
+  const [result, setResult] = useState(null);
   const videoRef = useRef(null);
 
-  useEffect(() => {
-    const reader = new BrowserMultiFormatReader();
-
-    async function init() {
-      try {
-        const videoDevices = await reader.listVideoInputDevices();
-        if (videoDevices.length > 0) {
-          setVideoDevice(videoDevices[0]);
-        } else {
-          console.error("No video devices found.");
-        }
-      } catch (error) {
-        console.error("Error listing video devices:", error);
-      }
-    }
-
-    init();
-
-    return () => {
-      // Cleanup: Stop the video stream if the component unmounts
-      if (videoRef.current && videoRef.current.srcObject) {
-        const tracks = videoRef.current.srcObject.getTracks();
-        tracks.forEach(track => track.stop());
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (videoDevice) {
-      const reader = new BrowserMultiFormatReader();
-
-      const constraints = {
-        video: { deviceId: { exact: videoDevice.deviceId } },
-      };
-
-      navigator.mediaDevices.getUserMedia(constraints)
-        .then(stream => {
-          videoRef.current.srcObject = stream;
-          reader.decodeFromInputVideoDevice(videoRef.current, 'video', (result) => {
-            if (result) {
-              setScanResult(result.text);
-            }
-          });
-        })
-        .catch(error => console.error("Error accessing camera:", error));
-    }
-  }, [videoDevice]);
+  const handleScan = (data) => {
+    setResult(data);
+  };
 
   return (
-    <>
-      <div>
-        {scanResult ? (
-          <p>Scanned Barcode: {scanResult}</p>
-        ) : (
-          <p>Scanning...</p>
-        )}
-        <video id="video" width="400" height="600" ref={videoRef} autoPlay playsInline />
-      </div>
-    </>
+    <div>
+      <BarcodeReader
+        onScan={handleScan} 
+        // Optional props: 
+        // - width: Set the width of the video element
+        // - height: Set the height of the video element
+        // - reader: Specify the barcode reader type (e.g., 'code128', 'ean13', 'upc') 
+      />
+
+      {result && (
+        <div>
+          <h3>Scanned Result:</h3>
+          <p>{result}</p>
+        </div>
+      )}
+    </div>
   );
-}
+};
 
 export default BarcodeScanner;
