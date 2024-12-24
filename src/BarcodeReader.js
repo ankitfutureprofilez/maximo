@@ -73,7 +73,7 @@ const BarcodeScanner = () => {
         style={{ width: '100%' }} 
       />
       {scannedData && <p>Scanned Data: {scannedData}</p>}
-      {scannedData && (
+      {!scannedData && (
         <button onClick={handleRetry}>Scan Again</button>
       )}
     </div>
