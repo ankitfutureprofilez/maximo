@@ -1,32 +1,29 @@
-import React, { useState, useRef } from 'react';
-import BarcodeReader from 'react-barcode-reader'; // Import BarcodeReader component
+import React from 'react';
+import { QrReader } from 'react-qr-reader';
 
-const BarcodeScanner = () => {
-  const [result, setResult] = useState(null);
-  const videoRef = useRef(null);
+const App = () => {
+  const handleScan = (result) => {
+    if (result) {
+      console.log("QR Code Data:", result.text);
+    }
+  };
 
-  const handleScan = (data) => {
-    setResult(data);
+  const handleError = (error) => {
+    console.error("Error scanning QR Code:", error);
   };
 
   return (
     <div>
-      <BarcodeReader
-        onScan={handleScan} 
-        // Optional props: 
-        // - width: Set the width of the video element
-        // - height: Set the height of the video element
-        // - reader: Specify the barcode reader type (e.g., 'code128', 'ean13', 'upc') 
+      <h1>QR Code Scanner</h1>
+      <QrReader
+        onResult={(result, error) => {
+          if (result) handleScan(result);
+          if (error) handleError(error);
+        }}
+        style={{ width: '100%' }}
       />
-
-      {result && (
-        <div>
-          <h3>Scanned Result:</h3>
-          <p>{result}</p>
-        </div>
-      )}
     </div>
   );
 };
 
-export default BarcodeScanner;
+export default App;
