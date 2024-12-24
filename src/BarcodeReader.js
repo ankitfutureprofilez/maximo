@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserBarcodeReader } from '@zxing/browser';
+import { BrowserMultiFormatReader } from '@zxing/browser';
 
 const BarcodeScanner = () => {
   const [scannedData, setScannedData] = useState(null);
@@ -7,7 +7,7 @@ const BarcodeScanner = () => {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    const codeReader = new BrowserBarcodeReader();
+    const codeReader = new BrowserMultiFormatReader();
 
     const startScanning = async () => {
       try {
