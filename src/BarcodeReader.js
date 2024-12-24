@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserQRCodeReader } from '@zxing/browser';
+import { BrowserBarcodeReader } from '@zxing/browser';
 
 const BarcodeScanner = () => {
   const [scannedData, setScannedData] = useState(null);
@@ -7,7 +7,7 @@ const BarcodeScanner = () => {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    const codeReader = new BrowserQRCodeReader();
+    const codeReader = new BrowserBarcodeReader();
 
     const startScanning = async () => {
       try {
@@ -24,12 +24,12 @@ const BarcodeScanner = () => {
           (result, error) => {
             if (result) {
               setScannedData(result.text);
-              console.log('Scanned Barcode/QR Code Data:', result.text);
-              // Stop scanning after a successful scan (optional)
-              // codeReader.stop();
+              console.log('Scanned Barcode Data:', result.text);
+              // Optional: Stop scanning after a successful scan
+              // codeReader.reset();
             } else if (error) {
-              console.error('Barcode/QR Code scanning error:', error);
-              setScannedData('Error scanning barcode.');
+              console.error('Barcode scanning error:', error);
+              setScannedData('Error scanning barcode. Please try again.'); 
             }
           }
         );
@@ -53,7 +53,12 @@ const BarcodeScanner = () => {
     <div>
       <h1>Barcode Scanner</h1>
       {cameraError && <p style={{ color: 'red' }}>{cameraError}</p>}
-      <video ref={videoRef} style={{ width: '500px' }} autoPlay playsInline />
+      <video 
+        ref={videoRef} 
+        style={{ width: '500px' }} 
+        autoPlay 
+        playsInline 
+      />
       {scannedData && <p>Scanned Data: {scannedData}</p>}
     </div>
   );
