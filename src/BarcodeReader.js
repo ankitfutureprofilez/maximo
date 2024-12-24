@@ -26,11 +26,10 @@ const BarcodeScanner = () => {
             if (result) {
               setScannedData(result.text);
               console.log('Scanned Barcode Data:', result.text);
-              // Optional: Stop scanning after a successful scan
-              // codeReader.reset();
+              codeReader.reset(); // Stop scanning after a successful scan
             } else if (error) {
               console.error('Barcode scanning error:', error);
-              setScannedData('Error scanning barcode. Please try again.'); 
+              setScannedData('Error scanning barcode. Please try again.');
             }
           }
         );
