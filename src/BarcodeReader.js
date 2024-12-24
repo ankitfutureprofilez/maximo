@@ -5,6 +5,7 @@ import './App.css'; // Import the CSS file
 const BarcodeScanner = () => {
   const [scannedData, setScannedData] = useState(null);
   const [cameraError, setCameraError] = useState(null);
+  const [scanning, setScanning] = useState(true); // New state to manage scanning status
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -13,7 +14,11 @@ const BarcodeScanner = () => {
     const startScanning = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' }, // Use the back camera
+          video: {
+            facingMode: 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
         });
 
         videoRef.current.srcObject = stream;
@@ -26,10 +31,10 @@ const BarcodeScanner = () => {
             if (result) {
               setScannedData(result.text);
               console.log('Scanned Barcode Data:', result.text);
-              codeReader.reset(); // Stop scanning after a successful scan
+              setScanning(false); // Stop scanning after a successful scan
             } else if (error) {
               console.error('Barcode scanning error:', error);
-              setScannedData('Error scanning barcode. Please try again.');
+              setCameraError('Error scanning barcode. Please try again.');
             }
           }
         );
@@ -39,7 +44,9 @@ const BarcodeScanner = () => {
       }
     };
 
-    startScanning();
+    if (scanning) {
+      startScanning();
+    }
 
     return () => {
       if (videoRef.current && videoRef.current.srcObject) {
@@ -47,7 +54,13 @@ const BarcodeScanner = () => {
         tracks.forEach((track) => track.stop());
       }
     };
-  }, []);
+  }, [scanning]);
+
+  const handleRetry = () => {
+    setScannedData(null);
+    setCameraError(null);
+    setScanning(true);
+  };
 
   return (
     <div className="scanner-container">
@@ -57,8 +70,12 @@ const BarcodeScanner = () => {
         ref={videoRef} 
         autoPlay 
         playsInline 
+        style={{ width: '100%' }} 
       />
       {scannedData && <p>Scanned Data: {scannedData}</p>}
+      {scannedData && (
+        <button onClick={handleRetry}>Scan Again</button>
+      )}
     </div>
   );
 };
