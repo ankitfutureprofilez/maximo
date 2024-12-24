@@ -1,41 +1,48 @@
-import React, { useEffect, useRef, useState } from "react";
-import { BrowserQRCodeReader } from "@zxing/browser";
+import React, { useEffect, useRef, useState } from 'react';
+import { BrowserQRCodeReader } from '@zxing/browser';
 
-const CustomBarcodeScanner = () => {
-  const [data, setData] = useState("No result");
+const BarcodeScanner = () => {
+  const [data, setData] = useState('No result');
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
   useEffect(() => {
     const codeReader = new BrowserQRCodeReader();
 
-    // Start the scanner
     const startScanner = async () => {
       try {
+        // Request access to the user's back camera
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { exact: "environment" } } 
+        });
+
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+
         const result = await codeReader.decodeFromVideoDevice(
-          null, // Use the default camera
+          undefined, 
           videoRef.current,
           (result, error) => {
             if (result) {
               setData(result.text);
-              console.log("Scanned Barcode/QR Code Data:", result.text);
-            }
-            if (error) {
-              console.error("Barcode/QR Code scanning error:", error);
+              console.log('Scanned Barcode/QR Code Data:', result.text);
+            } else if (error) { 
+              console.error('Barcode/QR Code scanning error:', error);
+              // Optional: Handle errors, e.g., display an error message to the user
+              // setData('Error scanning barcode.'); 
             }
           }
         );
 
-        // Save the video stream so we can stop it later
         streamRef.current = result;
       } catch (err) {
-        console.error("Error starting barcode scanner:", err);
+        console.error('Error starting barcode scanner:', err);
+        // Optional: Handle camera access errors, e.g., display a permission request message
       }
     };
 
     startScanner();
 
-    // Clean up the scanner on unmount
     return () => {
       if (streamRef.current) {
         const tracks = streamRef.current.getVideoTracks();
@@ -46,11 +53,16 @@ const CustomBarcodeScanner = () => {
 
   return (
     <div>
-      <h1>Custom Barcode/QR Code Scanner</h1>
-      <video ref={videoRef} style={{ width: "500px" }} />
+      <h1>Barcode Scanner</h1>
+      <video 
+        ref={videoRef} 
+        style={{ width: '500px' }} 
+        autoPlay 
+        playsInline 
+      />
       <p>Scanned Data: {data}</p>
     </div>
   );
 };
 
-export default CustomBarcodeScanner;
+export default BarcodeScanner;
