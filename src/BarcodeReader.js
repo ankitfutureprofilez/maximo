@@ -11,7 +11,6 @@ const BarcodeScanner = () => {
 
     const startScanner = async () => {
       try {
-        // Request access to the user's back camera
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: { exact: "environment" } } 
         });
@@ -26,10 +25,9 @@ const BarcodeScanner = () => {
             if (result) {
               setData(result.text);
               console.log('Scanned Barcode/QR Code Data:', result.text);
-            } else if (error) { 
+            } else if (error) {
               console.error('Barcode/QR Code scanning error:', error);
-              // Optional: Handle errors, e.g., display an error message to the user
-              // setData('Error scanning barcode.'); 
+              setData('Error scanning barcode.'); 
             }
           }
         );
@@ -37,7 +35,7 @@ const BarcodeScanner = () => {
         streamRef.current = result;
       } catch (err) {
         console.error('Error starting barcode scanner:', err);
-        // Optional: Handle camera access errors, e.g., display a permission request message
+        setData('Error accessing camera.'); 
       }
     };
 
