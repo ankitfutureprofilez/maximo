@@ -1,29 +1,16 @@
-import React from 'react';
-import { QrReader } from 'react-qr-reader';
+import logo from './logo.svg';
+import './App.css';
+import MaximoDataFetcher from './BarcodeReader';
+import { BrowserRouter as Router, Routes, Route } from'react-router-dom';
 
-const App = () => {
-  const handleScan = (result) => {
-    if (result) {
-      console.log("QR Code Data:", result.text);
-    }
-  };
-
-  const handleError = (error) => {
-    console.error("Error scanning QR Code:", error);
-  };
-
+function App() {
   return (
-    <div>
-      <h1>QR Code Scanner</h1>
-      <QrReader
-        onResult={(result, error) => {
-          if (result) handleScan(result);
-          if (error) handleError(error);
-        }}
-        style={{ width: '100%' }}
-      />
-    </div>
+   <Router>
+    <Routes>
+      <Route path="/" element={<MaximoDataFetcher />} />
+    </Routes>
+   </Router>
   );
-};
+}
 
 export default App;
