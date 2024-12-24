@@ -1,51 +1,47 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { BrowserQRCodeReader } from '@zxing/browser';
+import React, { useState, useEffect, useRef } from 'react';
+import Quagga from 'quagga';
 
 const BarcodeScanner = () => {
-  const [data, setData] = useState('No result');
+  const [scannedData, setScannedData] = useState(null);
   const videoRef = useRef(null);
-  const streamRef = useRef(null);
 
   useEffect(() => {
-    const codeReader = new BrowserQRCodeReader();
-
-    const startScanner = async () => {
+    const startScanning = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: "environment" } } 
+        await Quagga.init({
+          inputStream: {
+            name: 'live_stream',
+            type: 'live_stream',
+            target: videoRef.current,
+            constraints: {
+              width: 320,
+              height: 240,
+              facingMode: 'environment', // Use the back camera
+            },
+          },
+          decoder: {
+            readers: ['code_128', 'ean_reader', 'ean_8_reader', 'code_39_reader', 'code_39_vin_reader', 'codabar_reader', 'upc_reader', 'upc_e_reader', 'datamatrix_reader'],
+            debug: false,
+          },
+          locate: true,
         });
 
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
+        Quagga.onDetected((result) => {
+          setScannedData(result.codeResult.code);
+          Quagga.stop(); // Stop scanning after a successful scan
+        });
 
-        const result = await codeReader.decodeFromVideoDevice(
-          undefined, 
-          videoRef.current,
-          (result, error) => {
-            if (result) {
-              setData(result.text);
-              console.log('Scanned Barcode/QR Code Data:', result.text);
-            } else if (error) {
-              console.error('Barcode/QR Code scanning error:', error);
-              setData('Error scanning barcode.'); 
-            }
-          }
-        );
-
-        streamRef.current = result;
-      } catch (err) {
-        console.error('Error starting barcode scanner:', err);
-        setData('Error accessing camera.'); 
+        Quagga.start();
+      } catch (error) {
+        console.error('Error starting barcode scanner:', error);
+        setScannedData('Error accessing camera.');
       }
     };
 
-    startScanner();
+    startScanning();
 
     return () => {
-      if (streamRef.current) {
-        const tracks = streamRef.current.getVideoTracks();
-        tracks.forEach((track) => track.stop());
-      }
+      Quagga.stop();
     };
   }, []);
 
@@ -58,7 +54,7 @@ const BarcodeScanner = () => {
         autoPlay 
         playsInline 
       />
-      <p>Scanned Data: {data}</p>
+      {scannedData && <p>Scanned Data: {scannedData}</p>}
     </div>
   );
 };
