@@ -1,53 +1,56 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Quagga from 'quagga';
+import { BrowserQRCodeReader } from '@zxing/browser';
 
 const BarcodeScanner = () => {
   const [scannedData, setScannedData] = useState(null);
+  const [cameraError, setCameraError] = useState(null);
   const videoRef = useRef(null);
 
   useEffect(() => {
+    const codeReader = new BrowserQRCodeReader();
+
     const startScanning = async () => {
       try {
-        await Quagga.init({
-          inputStream: {
-            name: 'live_stream',
-            type: 'live_stream',
-            target: videoRef.current,
-            constraints: {
-              width: 320,
-              height: 240,
-              facingMode: 'environment', // Use the back camera
-            },
-          },
-          decoder: {
-            readers: ['code_128', 'ean_reader', 'ean_8_reader', 'code_39_reader', 'code_39_vin_reader', 'codabar_reader', 'upc_reader', 'upc_e_reader', 'datamatrix_reader'],
-            debug: false,
-          },
-          locate: true,
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }, // Use the back camera
         });
 
-        Quagga.onDetected((result) => {
-          setScannedData(result.codeResult.code);
-          Quagga.stop(); // Stop scanning after a successful scan
-        });
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
 
-        Quagga.start();
-      } catch (error) {
-        console.error('Error starting barcode scanner:', error);
-        setScannedData('Error accessing camera.');
+        codeReader.decodeFromVideoDevice(
+          undefined,
+          videoRef.current,
+          (result, error) => {
+            if (result) {
+              setScannedData(result.text);
+              console.log('Scanned Barcode/QR Code Data:', result.text);
+            } else if (error) {
+              console.error('Barcode/QR Code scanning error:', error);
+              setScannedData('Error scanning barcode.');
+            }
+          }
+        );
+      } catch (err) {
+        console.error('Error accessing camera:', err);
+        setCameraError('Error accessing camera. Please check camera permissions and try again.'); 
       }
     };
 
     startScanning();
 
     return () => {
-      Quagga.stop();
+      if (videoRef.current && videoRef.current.srcObject) {
+        const tracks = videoRef.current.srcObject.getTracks();
+        tracks.forEach((track) => track.stop());
+      }
     };
   }, []);
 
   return (
     <div>
       <h1>Barcode Scanner</h1>
+      {cameraError && <p style={{ color: 'red' }}>{cameraError}</p>} 
       <video 
         ref={videoRef} 
         style={{ width: '500px' }} 
