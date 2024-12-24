@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@progress/kendo-react-barcodes": "^9.1.0",
+    "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
@@ -14,6 +16,7 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.0",
     "react-scripts": "5.0.1",
+    "react-zxing": "^2.0.2",
     "web-vitals": "^4.2.4"
   },
   "scripts": {
