@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
+import './App.css'; // Import the CSS file
 
 const BarcodeScanner = () => {
   const [scannedData, setScannedData] = useState(null);
@@ -50,12 +51,11 @@ const BarcodeScanner = () => {
   }, []);
 
   return (
-    <div>
+    <div className="scanner-container">
       <h1>Barcode Scanner</h1>
-      {cameraError && <p style={{ color: 'red' }}>{cameraError}</p>}
+      {cameraError && <p className="error-message">{cameraError}</p>}
       <video 
         ref={videoRef} 
-        style={{ width: '500px' }} 
         autoPlay 
         playsInline 
       />
