@@ -4,7 +4,7 @@ import { BrowserMultiFormatReader } from '@zxing/library';
 function BarcodeScanner() {
   const [scanResult, setScanResult] = useState('');
   const [videoDevice, setVideoDevice] = useState(null);
-  const videoRef = useRef(null); 
+  const videoRef = useRef(null);
 
   useEffect(() => {
     const reader = new BrowserMultiFormatReader();
@@ -13,7 +13,7 @@ function BarcodeScanner() {
       try {
         const videoDevices = await reader.listVideoInputDevices();
         if (videoDevices.length > 0) {
-          setVideoDevice(videoDevices[0]); 
+          setVideoDevice(videoDevices[0]);
         } else {
           console.error("No video devices found.");
         }
@@ -44,7 +44,7 @@ function BarcodeScanner() {
       navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
           videoRef.current.srcObject = stream;
-          reader.decodeFromInputVideoDevice(videoRef.current, 'video', (result) => { 
+          reader.decodeFromInputVideoDevice(videoRef.current, 'video', (result) => {
             if (result) {
               setScanResult(result.text);
             }
@@ -62,7 +62,7 @@ function BarcodeScanner() {
         ) : (
           <p>Scanning...</p>
         )}
-        <video id="video" width="400" height="600" ref={videoRef} autoPlay playsInline /> 
+        <video id="video" width="400" height="600" ref={videoRef} autoPlay playsInline />
       </div>
     </>
   );
