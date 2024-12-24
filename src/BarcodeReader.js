@@ -1,35 +1,37 @@
-import React, { useState } from 'react';
-import { BrowserMultiFormatReader } from '@zxing/browser';
+import React, { useState } from "react";
+import BarcodeScannerComponent from "react-qr-barcode-scanner";
 
 const BarcodeReader = () => {
-  const [result, setResult] = useState('');
+  const [data, setData] = useState("No result");
+  const [name, setName] = useState("");
 
-  const handleScan = async () => {
-    const codeReader = new BrowserMultiFormatReader();
-
-    try {
-      const devices = await codeReader.listVideoInputDevices();
-      if (devices.length > 0) {
-        codeReader.decodeFromInputVideoDevice(devices[0].deviceId, 'video', (result, err) => {
-          if (result) {
-            setResult(result.text);
-          }
-          if (err) {
-            console.error(err);
-          }
-        });
+  const handleUpdate = (err, result) => {
+    if (result) {
+      setData(result.text);
+      // Assuming the scanned data contains a JSON object with a 'name' field
+      try {
+        const parsedData = JSON.parse(result.text);
+        if (parsedData.name) {
+          setName(parsedData.name);
+        } else {
+          setName("Name not found in scanned data.");
+        }
+      } catch {
+        setName("Invalid data format.");
       }
-    } catch (err) {
-      console.error('Error listing video input devices:', err);
     }
   };
 
   return (
-    <div>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>Barcode Reader</h1>
-      <button onClick={handleScan}>Start Scanning</button>
-      <video id="video" width="300" height="200" style={{ border: '1px solid black' }}></video>
-      {result && <p>Scanned Result: {result}</p>}
+      <BarcodeScannerComponent
+        width={500}
+        height={500}
+        onUpdate={handleUpdate}
+      />
+      <p>Scanned Data: {data}</p>
+      <h3>Name: {name}</h3>
     </div>
   );
 };

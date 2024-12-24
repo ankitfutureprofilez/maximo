@@ -1,25 +1,6 @@
 {
-  "manifest_version": 3,
-  "name": "React Chrome Extension",
-  "version": "1.0",
-  "description": "A simple Chrome extension with React",
-  "background": {
-    "service_worker": "background.js"
-  },
-  "permissions": [
-    "tabs",
-    "activeTab"
-  ],
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ],
-  "action": {
-    "default_popup": "index.html",
-    "default_title": "Open Extension"
-  },
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",
@@ -36,5 +17,9 @@
       "type": "image/png",
       "sizes": "512x512"
     }
-  ]
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
 }
