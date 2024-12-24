@@ -53,3 +53,9 @@ button:hover {
   color: red;
   font-weight: bold;
 }
+
+/* Scanned Data */
+.scanned-data {
+  font-weight: bold;
+  margin-top: 15px;
+}

@@ -68,9 +68,8 @@ const BarcodeScanner = () => {
         ref={videoRef} 
         autoPlay 
         playsInline 
-        style={{ width: '100%' }} 
       />
-      {scannedData && <p>Scanned Data: {scannedData}</p>}
+      {scannedData && <p className="scanned-data">Scanned Data: {scannedData}</p>}
       {!scannedData && (
         <button onClick={handleRetry}>Scan Again</button>
       )}
