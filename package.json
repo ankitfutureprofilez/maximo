@@ -6,6 +6,8 @@
     "@zxing/library": "^0.21.3",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
+    "jsbarcode": "^3.11.6",
+    "jspdf": "^2.5.2",
     "jsqr": "^1.4.0",
     "react": "^19.0.0",
     "react-barcode-reader": "^0.0.2",

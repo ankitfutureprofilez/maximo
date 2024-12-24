@@ -1,78 +1,116 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { BarcodeDetector } from '@zxing/library';
+import { jsPDF } from 'jspdf';
+import JsBarcode from 'jsbarcode'; // Import the barcode decoding library
 
-const BarcodeScanner = () => {
-  const [result, setResult] = useState(null);
+const BarcodeReader = () => {
+  const [scannedData, setScannedData] = useState('');
   const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  // Error state and message for handling potential issues
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const startScanning = async () => {
-      try {
-        const barcodeDetector = new BarcodeDetector();
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        videoRef.current.srcObject = stream;
-
-        const handleVideoFrame = async () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = videoRef.current.videoWidth;
-          canvas.height = videoRef.current.videoHeight;
-          const context = canvas.getContext('2d');
-          context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-
-          try {
-            const codes = await barcodeDetector.detect(imageData);
-            if (codes.length > 0) {
-              setResult(codes[0].rawValue);
-            }
-          } catch (error) {
-            console.error('Error decoding barcode:', error);
-          }
-
-          requestAnimationFrame(handleVideoFrame);
-        };
-
-        requestAnimationFrame(handleVideoFrame);
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-      }
+    // Handle potential errors during camera access
+    const handleError = (error) => {
+      setError(`Error accessing camera: ${error.message}`);
+      console.error('Error accessing camera:', error);
     };
 
-    startScanning();
+    const handleSuccess = (stream) => {
+      videoRef.current.srcObject = stream;
+      videoRef.current.onloadedmetadata = () => {
+        videoRef.current.play();
+        requestAnimationFrame(detectBarcode);
+      };
+    };
 
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(handleSuccess)
+      .catch(handleError);
+
+    // Clean up resources when the component unmounts
     return () => {
-      // Stop the video stream if the component unmounts
       if (videoRef.current && videoRef.current.srcObject) {
-        const tracks = videoRef.current.srcObject.getTracks();
-        tracks.forEach((track) => track.stop());
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
       }
     };
-  }, []);
+  }, []); // Run the effect only once on component mount
 
-  const handleButtonClick = () => {
-    // This code runs when the button is clicked
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tabId = tabs[0].id; // Get the current tab's ID
+  const handleScan = async () => {
+    try {
+      // Request access to the user's camera
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoRef.current.srcObject = stream;
 
-      // Send a message to the content script
-      chrome.tabs.sendMessage(tabId, { action: 'doSomething' }, (response) => {
-        console.log('Response from content script:', response);
-      });
-    });
+      videoRef.current.onloadedmetadata = () => {
+        videoRef.current.play();
+        requestAnimationFrame(detectBarcode);
+      };
+    } catch (error) {
+      setError(`Error accessing camera: ${error.message}`);
+      console.error('Error accessing camera:', error);
+    }
+  };
+
+  const detectBarcode = async () => {
+    if (!videoRef.current || !canvasRef.current) {
+      return; // Handle potential missing references
+    }
+
+    const context = canvasRef.current.getContext('2d');
+    const width = videoRef.current.videoWidth;
+    const height = videoRef.current.videoHeight;
+
+    canvasRef.current.width = width;
+    canvasRef.current.height = height;
+
+    context.drawImage(videoRef.current, 0, 0, width, height);
+
+    const imageData = canvasRef.current.toDataURL('image/jpeg');
+
+    try {
+      const decodedData = await JsBarcode.decodeAsync(imageData);
+      if (decodedData) {
+        setScannedData(decodedData.text);
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      }
+    } catch (error) {
+      setError(`Error decoding barcode: ${error.message}`);
+      console.error('Error decoding barcode:', error);
+    }
+
+    requestAnimationFrame(detectBarcode);
+  };
+
+  const handleDownload = () => {
+    if (!scannedData) {
+      return; // Handle downloading without scanned data
+    }
+
+    const doc = new jsPDF();
+    doc.text(`Scanned Barcode: ${scannedData}`, 10, 10);
+    doc.save('barcode_scan.pdf');
   };
 
   return (
     <div>
-      <button onClick={handleButtonClick}>Do Something</button>
-      <video ref={videoRef} autoPlay playsInline />
-      {result && (
-        <div>
-          <h3>Scanned Result:</h3>
-          <p>{result}</p>
-        </div>
-      )}
+      <h1>Barcode Reader</h1>
+      <video ref={videoRef} width="640" height="480" autoPlay />
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+      <button onClick={handleScan}>Start Scan</button>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <div>
+        <h3>Scanned Data:</h3>
+        <p>{scannedData}</p>
+      </div>
+      {scannedData && <button onClick={handleDownload}>Download as PDF</button>}
     </div>
   );
 };
 
-export default BarcodeScanner;
+export default BarcodeReader;
