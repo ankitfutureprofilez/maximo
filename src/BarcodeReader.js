@@ -18,10 +18,10 @@ const CustomBarcodeScanner = () => {
           (result, error) => {
             if (result) {
               setData(result.text);
-              console.log("Scanned QR Code Data:", result.text);
+              console.log("Scanned Barcode/QR Code Data:", result.text);
             }
             if (error) {
-              console.error("QR Code scanning error:", error);
+              console.error("Barcode/QR Code scanning error:", error);
             }
           }
         );
@@ -46,7 +46,7 @@ const CustomBarcodeScanner = () => {
 
   return (
     <div>
-      <h1>Custom Barcode Scanner</h1>
+      <h1>Custom Barcode/QR Code Scanner</h1>
       <video ref={videoRef} style={{ width: "500px" }} />
       <p>Scanned Data: {data}</p>
     </div>
