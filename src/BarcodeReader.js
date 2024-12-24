@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
-import './App.css'; // Import the CSS file
 
 const BarcodeScanner = () => {
   const [scannedData, setScannedData] = useState(null);
