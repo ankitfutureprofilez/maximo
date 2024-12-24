@@ -25,6 +25,8 @@ const BarcodeScanner = () => {
             if (result) {
               setScannedData(result.text);
               console.log('Scanned Barcode/QR Code Data:', result.text);
+              // Stop scanning after a successful scan (optional)
+              // codeReader.stop();
             } else if (error) {
               console.error('Barcode/QR Code scanning error:', error);
               setScannedData('Error scanning barcode.');
@@ -33,7 +35,7 @@ const BarcodeScanner = () => {
         );
       } catch (err) {
         console.error('Error accessing camera:', err);
-        setCameraError('Error accessing camera. Please check camera permissions and try again.'); 
+        setCameraError('Error accessing camera. Please check permissions and try again.');
       }
     };
 
@@ -50,13 +52,8 @@ const BarcodeScanner = () => {
   return (
     <div>
       <h1>Barcode Scanner</h1>
-      {cameraError && <p style={{ color: 'red' }}>{cameraError}</p>} 
-      <video 
-        ref={videoRef} 
-        style={{ width: '500px' }} 
-        autoPlay 
-        playsInline 
-      />
+      {cameraError && <p style={{ color: 'red' }}>{cameraError}</p>}
+      <video ref={videoRef} style={{ width: '500px' }} autoPlay playsInline />
       {scannedData && <p>Scanned Data: {scannedData}</p>}
     </div>
   );
