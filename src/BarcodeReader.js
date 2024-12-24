@@ -8,7 +8,7 @@ const BarcodeScanner = () => {
   useEffect(() => {
     const startScanning = async () => {
       try {
-        const barcodeDetector = new BarcodeDetector(); 
+        const barcodeDetector = new BarcodeDetector();
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         videoRef.current.srcObject = stream;
 
@@ -23,16 +23,16 @@ const BarcodeScanner = () => {
           try {
             const codes = await barcodeDetector.detect(imageData);
             if (codes.length > 0) {
-              setResult(codes[0].rawValue); 
+              setResult(codes[0].rawValue);
             }
           } catch (error) {
             console.error('Error decoding barcode:', error);
           }
 
-          requestAnimationFrame(handleVideoFrame); 
+          requestAnimationFrame(handleVideoFrame);
         };
 
-        requestAnimationFrame(handleVideoFrame); 
+        requestAnimationFrame(handleVideoFrame);
       } catch (error) {
         console.error('Error accessing camera:', error);
       }
@@ -49,8 +49,21 @@ const BarcodeScanner = () => {
     };
   }, []);
 
+  const handleButtonClick = () => {
+    // This code runs when the button is clicked
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tabId = tabs[0].id; // Get the current tab's ID
+
+      // Send a message to the content script
+      chrome.tabs.sendMessage(tabId, { action: 'doSomething' }, (response) => {
+        console.log('Response from content script:', response);
+      });
+    });
+  };
+
   return (
     <div>
+      <button onClick={handleButtonClick}>Do Something</button>
       <video ref={videoRef} autoPlay playsInline />
       {result && (
         <div>
