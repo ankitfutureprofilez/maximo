@@ -34,13 +34,11 @@ const BarcodeScanner = () => {
               setScanning(false); // Stop scanning after a successful scan
             } else if (error && !error.message.includes('No MultiFormatReader available')) {
               console.error('Barcode scanning error:', error);
-              setCameraError('Error scanning barcode. Please try again.');
             }
           }
         );
       } catch (err) {
         console.error('Error accessing camera:', err);
-        setCameraError('Error accessing camera. Please check permissions and try again.');
       }
     };
 
