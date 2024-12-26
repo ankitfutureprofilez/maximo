@@ -7,8 +7,8 @@ function App() {
   return (
    <Router>
     <Routes>
-      <Route path="/" element={<MaximoDataFetcher />} />
-      <Route path="/BarcodeReader" element={<BarcodeReader />} />
+      {/* <Route path="/" element={<MaximoDataFetcher />} /> */}
+      <Route path="/" element={<BarcodeReader />} />
 
     </Routes>
    </Router>
