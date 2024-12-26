@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
+import './App.css'; // Ensure you include the updated CSS for the green line effect
 
 const BarcodeScanner = () => {
   const [scannedData, setScannedData] = useState(null);
   const [cameraError, setCameraError] = useState(null);
-  const [scanning, setScanning] = useState(true); // New state to manage scanning status
+  const [scanning, setScanning] = useState(true);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -30,7 +31,11 @@ const BarcodeScanner = () => {
             if (result) {
               setScannedData(result.text);
               console.log('Scanned Barcode Data:', result.text);
-              setScanning(false); // Stop scanning after a successful scan
+              setScanning(false);
+              if (videoRef.current && videoRef.current.srcObject) {
+                const tracks = videoRef.current.srcObject.getTracks();
+                tracks.forEach((track) => track.stop());
+              }
             } else if (error && !error.message.includes('No MultiFormatReader available')) {
               console.error('Barcode scanning error:', error);
             }
@@ -38,6 +43,7 @@ const BarcodeScanner = () => {
         );
       } catch (err) {
         console.error('Error accessing camera:', err);
+        setCameraError('Unable to access the camera. Please check permissions.');
       }
     };
 
@@ -63,15 +69,16 @@ const BarcodeScanner = () => {
     <div className="scanner-container">
       <h1>Barcode Scanner</h1>
       {cameraError && <p className="error-message">{cameraError}</p>}
-      <video 
-        ref={videoRef} 
-        autoPlay 
-        playsInline 
-      />
-      {scannedData && <p className="scanned-data">Scanned Data: {scannedData}</p>}
-      {!scannedData && (
-        <button onClick={handleRetry}>Scan Again</button>
-      )}
+      <div className="scanner-wrapper">
+        {!scannedData && (
+          <>
+            <video ref={videoRef} autoPlay playsInline />
+            <div className="green-line" />
+          </>
+        )}
+        {scannedData && <p className="scanned-data">Scanned Data: {scannedData}</p>}
+      </div>
+      <button onClick={handleRetry}>Scan Again</button>
     </div>
   );
 };

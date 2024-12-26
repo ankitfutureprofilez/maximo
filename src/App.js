@@ -1,5 +1,6 @@
 import './App.css';
-import MaximoDataFetcher from './BarcodeReader';
+import MaximoDataFetcher from './MaximoDataFetcher.js';
+import BarcodeReader from './BarcodeReader.js';
 import { BrowserRouter as Router, Routes, Route } from'react-router-dom';
 
 function App() {
@@ -7,6 +8,8 @@ function App() {
    <Router>
     <Routes>
       <Route path="/" element={<MaximoDataFetcher />} />
+      <Route path="/BarcodeReader" element={<BarcodeReader />} />
+
     </Routes>
    </Router>
   );
