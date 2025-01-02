@@ -1,5 +1,4 @@
 import './App.css';
-import MaximoDataFetcher from './MaximoDataFetcher.js';
 import { BrowserRouter as Router, Routes, Route } from'react-router-dom';
 import LocationTracker from './Tracking.jsx';
 
