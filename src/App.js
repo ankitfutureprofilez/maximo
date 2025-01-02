@@ -1,16 +1,19 @@
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LocationTracker from './Tracking.jsx';
+import BarcodeScanner from './BarcodeReader.js';
 
 function App() {
   return (
-   <Router>
-    <Routes>
-      {/* <Route path="/" element={<MaximoDataFetcher />} /> */}
-      <Route path="/" element={<LocationTracker />} />
+    <Router>
+      <Routes>
+        {/* <Route path="/" element={<MaximoDataFetcher />} /> */}
+        <Route path="/" element={<LocationTracker />} />
+        <Route path="/Barcode" element={<BarcodeScanner />} />
 
-    </Routes>
-   </Router>
+
+      </Routes>
+    </Router>
   );
 }
 
