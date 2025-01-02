@@ -44,7 +44,7 @@ const LocationTracker = () => {
             }
         };
 
-        const interval = setInterval(fetchLocation, 5000); // Fetch location every 5 seconds
+        const interval = setInterval(fetchLocation, 2000); // Fetch location every 5 seconds
 
         return () => clearInterval(interval); // Clean up the interval on component unmount
     }, [apiKey, destination]);
