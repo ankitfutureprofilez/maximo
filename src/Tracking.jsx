@@ -37,7 +37,7 @@ const LocationTracker = () => {
     };
 
     return (
-        <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+        <LoadScript googleMapsApiKey="AIzaSyDzPG91wtUKY3vd_iD3QWorkUCSdofTS58Y">
             <GoogleMap
                 mapContainerStyle={mapStyles}
                 zoom={15}
