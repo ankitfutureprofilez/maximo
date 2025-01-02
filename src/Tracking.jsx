@@ -18,7 +18,7 @@ const LocationTracker = () => {
     useEffect(() => {
         const fetchLocation = async () => {
             try {
-                const result = await axios.post(`https://www.googleapis.com/geolocation/v1/geolocate?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`, {
+                const result = await axios.post(`https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBoHSgIrrdijx_5Nex1rFX4g-B4HJSLdDw`, {
                     considerIp: true
                 });
                 const { lat, lng } = result.data.location;
@@ -47,7 +47,7 @@ const LocationTracker = () => {
     };
 
     return (
-        <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
+        <LoadScript googleMapsApiKey="AIzaSyBoHSgIrrdijx_5Nex1rFX4g-B4HJSLdDw">
             <GoogleMap
                 mapContainerStyle={mapStyles}
                 zoom={15}
@@ -56,17 +56,17 @@ const LocationTracker = () => {
                 <Marker position={location} icon={truckIcon} />
                 <Marker position={destination} />
                 <DirectionsService
-                    options={{
+                    options={{ 
                         destination: destination,
                         origin: location,
-                        travelMode: 'DRIVING'
+                        travelMode: 'DRIVING' 
                     }}
                     callback={directionsCallback}
                 />
                 {response && (
                     <DirectionsRenderer
-                        options={{
-                            directions: response
+                        options={{ 
+                            directions: response 
                         }}
                     />
                 )}
