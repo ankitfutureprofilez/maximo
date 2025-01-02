@@ -15,7 +15,7 @@ const LocationTracker = () => {
     useEffect(() => {
         const fetchLocation = async () => {
             try {
-                const result = await axios.post('https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDzPG91wtUKY3vd_iD3QWorkUCSdofTS58', {
+                const result = await axios.post('https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBoHSgIrrdijx_5Nex1rFX4g-B4HJSLdDw', {
                     considerIp: true
                 });
                 const { lat, lng } = result.data.location;
