@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
+import axios from 'axios';
 
 const mapStyles = {
     height: "100vh",
@@ -12,20 +13,21 @@ const LocationTracker = () => {
     const [response, setResponse] = useState(null);
 
     useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(
-                position => {
-                    setLocation({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    });
-                },
-                error => console.log(error),
-                { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-            );
-        } else {
-            console.log("Geolocation is not supported by this browser.");
-        }
+        const fetchLocation = async () => {
+            try {
+                const result = await axios.post('https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDzPG91wtUKY3vd_iD3QWorkUCSdofTS58', {
+                    considerIp: true
+                });
+                const { lat, lng } = result.data.location;
+                setLocation({ lat, lng });
+            } catch (error) {
+                console.error('Error fetching geolocation', error);
+            }
+        };
+
+        const interval = setInterval(fetchLocation, 5000); // Update location every 5 seconds
+
+        return () => clearInterval(interval); // Clean up the interval on component unmount
     }, []);
 
     const directionsCallback = (result, status) => {
@@ -37,7 +39,7 @@ const LocationTracker = () => {
     };
 
     return (
-        <LoadScript googleMapsApiKey="AIzaSyDzPG91wtUKY3vd_iD3QWorkUCSdofTS58Y">
+        <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
             <GoogleMap
                 mapContainerStyle={mapStyles}
                 zoom={15}
