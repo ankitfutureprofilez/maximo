@@ -8,7 +8,7 @@ function App() {
     <Router>
       <Routes>
         {/* <Route path="/" element={<MaximoDataFetcher />} /> */}
-        <Route path="/" element={<LocationTracker />} />
+        <Route path="/" element={<BarcodeScanner />} />
         <Route path="/Barcode" element={<BarcodeScanner />} />
 
 
